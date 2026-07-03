@@ -23,6 +23,22 @@ Ouvre `index.html` dans un navigateur.
 
 Le dashboard essaie de charger CoinGecko en direct. Si l'API est indisponible, il utilise le snapshot embarque.
 
+## Sur le VPS
+
+```bash
+git clone https://github.com/Prolyval/agent-ia-fable-5.git
+cd agent-ia-fable-5
+chmod +x scripts/research_loop.sh
+tmux new -s fable5
+./scripts/research_loop.sh
+```
+
+Detacher tmux: `Ctrl+B`, puis `D`.
+
+Revenir dans la session: `tmux attach -t fable5`.
+
+Voir aussi `docs/VPS_CONTINUOUS_RUN.md`.
+
 ## Regle de securite
 
 Recherche d'abord. Paper trading ensuite. Argent reel seulement apres backtests, limites de risque, API sans retrait, et validation humaine explicite.
