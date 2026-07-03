@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+*.log
+*.codexbundle
+*.zip
+secrets/
+wallet*
+private*
+keys*
+api-keys*

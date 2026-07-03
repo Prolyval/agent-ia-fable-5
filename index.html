@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fable 5 Crypto Research Desk</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #172026;
+      --muted: #66727d;
+      --line: #d8dee4;
+      --teal: #087f8c;
+      --green: #0f8b4c;
+      --red: #b42318;
+      --amber: #b86e00;
+      --blue: #315c99;
+      --violet: #6b4e9b;
+      --shadow: 0 12px 28px rgba(23, 32, 38, 0.08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      letter-spacing: 0;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button.primary {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: #fff;
+    }
+
+    button.danger {
+      border-color: #f0c7c2;
+      background: #fff5f3;
+      color: var(--red);
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 18px clamp(16px, 3vw, 32px);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: clamp(22px, 3vw, 34px);
+      line-height: 1.05;
+      margin: 0 0 6px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      max-width: 820px;
+      font-size: 14px;
+    }
+
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .pill.good { color: var(--green); border-color: #b8dfca; background: #f1fbf5; }
+    .pill.warn { color: var(--amber); border-color: #f0d29e; background: #fff8eb; }
+    .pill.bad { color: var(--red); border-color: #f0c7c2; background: #fff5f3; }
+
+    main {
+      width: 100%;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 22px clamp(16px, 3vw, 32px) 44px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.5fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      background: #fbfcfd;
+      min-width: 0;
+    }
+
+    .metric span {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(20px, 2vw, 28px);
+      line-height: 1;
+      word-break: break-word;
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      min-height: 38px;
+      padding: 8px 10px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      background: #fbfcfd;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .table-wrap {
+      max-height: 560px;
+      overflow: auto;
+    }
+
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .up { color: var(--green); font-weight: 700; }
+    .down { color: var(--red); font-weight: 700; }
+    .muted { color: var(--muted); }
+
+    .score {
+      display: inline-grid;
+      place-items: center;
+      min-width: 34px;
+      height: 26px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+      background: #eef8f9;
+      color: var(--teal);
+      border: 1px solid #bde4e8;
+    }
+
+    .score.low {
+      color: var(--amber);
+      background: #fff8eb;
+      border-color: #f0d29e;
+    }
+
+    .score.bad {
+      color: var(--red);
+      background: #fff5f3;
+      border-color: #f0c7c2;
+    }
+
+    .layout-two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .bar {
+      height: 10px;
+      background: #e8edf1;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--teal), var(--green));
+    }
+
+    .note {
+      border-left: 3px solid var(--blue);
+      padding: 10px 12px;
+      background: #f5f8fc;
+      color: #334253;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .repo-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .repo {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+
+    .repo strong {
+      display: block;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .repo small {
+      display: block;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tabs button[aria-selected="true"] {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    .hidden { display: none; }
+
+    .footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 980px) {
+      .grid, .layout-two {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .status {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .metrics, .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      th, td {
+        padding: 9px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="topbar">
+        <div>
+          <h1>Fable 5 Crypto Research Desk</h1>
+          <p class="subtitle">Dashboard local pour surveiller le marche, simuler les positions et cadrer l'objectif par cycles de 220 EUR avant toute execution reelle.</p>
+        </div>
+        <div class="status">
+          <span id="apiStatus" class="pill warn">API en attente</span>
+          <span class="pill bad">Pas de wallet connecte</span>
+          <span class="pill good">Mode recherche</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Objectif et risque</h2>
+            <button id="resetSettings">Reset</button>
+          </div>
+          <div class="panel-body controls">
+            <div class="metrics">
+              <div class="metric">
+                <span>Objectif cycle</span>
+                <strong id="targetLabel">220 EUR</strong>
+              </div>
+              <div class="metric">
+                <span>PNL ouvert</span>
+                <strong id="openPnlLabel">0 EUR</strong>
+              </div>
+              <div class="metric">
+                <span>Risque / trade</span>
+                <strong id="riskTradeLabel">0 EUR</strong>
+              </div>
+              <div class="metric">
+                <span>Stop quotidien</span>
+                <strong id="dailyStopLabel">0 EUR</strong>
+              </div>
+            </div>
+
+            <div>
+              <div class="bar" aria-label="Progression objectif"><i id="targetBar"></i></div>
+            </div>
+
+            <div class="form-row">
+              <label>Capital suivi EUR
+                <input id="capitalInput" type="number" min="0" step="10" value="1000">
+              </label>
+              <label>Objectif EUR
+                <input id="targetInput" type="number" min="1" step="10" value="220">
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Risque / trade %
+                <input id="riskInput" type="number" min="0" max="5" step="0.1" value="0.5">
+              </label>
+              <label>Stop quotidien %
+                <input id="dailyLossInput" type="number" min="0" max="10" step="0.25" value="2">
+              </label>
+            </div>
+            <div class="note">
+              Regle actuelle: l'agent peut chercher, backtester, alerter et simuler. Il ne doit pas placer d'ordre reel sans API separee, sans droit de retrait, et sans validation explicite.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Marche dynamique</h2>
+            <div class="actions">
+              <select id="marketFilter" aria-label="Filtre marche">
+                <option value="safe">Liquid majors</option>
+                <option value="momentum">Momentum</option>
+                <option value="flagged">A verifier</option>
+                <option value="all">Tout</option>
+              </select>
+              <button class="primary" id="refreshBtn">Rafraichir</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Actif</th>
+                  <th class="num">Prix</th>
+                  <th class="num">24h</th>
+                  <th class="num">7j</th>
+                  <th class="num">Vol.</th>
+                  <th class="num">Score</th>
+                  <th>Etat</th>
+                </tr>
+              </thead>
+              <tbody id="marketRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="layout-two">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Positions simulees</h2>
+            <button id="clearPositions" class="danger">Vider</button>
+          </div>
+          <div class="panel-body controls">
+            <div class="form-row">
+              <label>Actif
+                <select id="positionAsset"></select>
+              </label>
+              <label>Quantite
+                <input id="positionQty" type="number" min="0" step="0.000001" value="0">
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Entree EUR
+                <input id="positionEntry" type="number" min="0" step="0.000001" value="0">
+              </label>
+              <label>Note
+                <input id="positionNote" type="text" maxlength="64" placeholder="setup, source, invalidation">
+              </label>
+            </div>
+            <div class="actions">
+              <button id="addPosition" class="primary">Ajouter</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Actif</th>
+                  <th class="num">Qty</th>
+                  <th class="num">Entree</th>
+                  <th class="num">Prix</th>
+                  <th class="num">PNL</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="positionRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Agent loop</h2>
+            <button id="copyPrompt">Copier prompt</button>
+          </div>
+          <div class="panel-body">
+            <div class="tabs">
+              <button class="tab" data-tab="plan" aria-selected="true">Plan</button>
+              <button class="tab" data-tab="repos" aria-selected="false">Repos</button>
+              <button class="tab" data-tab="guards" aria-selected="false">Garde-fous</button>
+            </div>
+            <div id="tab-plan">
+              <div class="note">
+                Prochaine boucle: scan CoinGecko/exchange, filtrage anti-scam, backtest rapide, watchlist, puis decision NO TRADE ou setup papier avec invalidation.
+              </div>
+              <div class="footer" id="loopText"></div>
+            </div>
+            <div id="tab-repos" class="hidden">
+              <div class="repo-list" id="repoList"></div>
+            </div>
+            <div id="tab-guards" class="hidden">
+              <div class="note">
+                Si un depot ou token promet un rendement garanti, demande une seed phrase, impose une API avec retrait ou cache sa strategie, il sort du pipeline.
+              </div>
+              <div class="footer">
+                Production: dry-run par defaut, API sans retrait, plafond capital, kill switch, journal des decisions, stop quotidien.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const fallbackAssets = [
+      { id: "tether", symbol: "usdt", name: "Tether", price_eur: 0.872567, market_cap_rank: 3, market_cap: 160804516408, volume_24h: 47051077597, change_24h: 0.03, change_7d: -0.34, last_updated: "2026-07-03T12:36:31.073Z" },
+      { id: "bitcoin", symbol: "btc", name: "Bitcoin", price_eur: 54033, market_cap_rank: 1, market_cap: 1083556015051, volume_24h: 28430359543, change_24h: 0.89, change_7d: 3.81, last_updated: "2026-07-03T12:36:47.469Z" },
+      { id: "sheboshis-2", symbol: "sheb", name: "Sheboshis", price_eur: 9.22, market_cap_rank: 4649, market_cap: 184394, volume_24h: 17016559937, change_24h: 0, change_7d: 0, last_updated: "2026-06-10T16:01:18.592Z" },
+      { id: "ethereum", symbol: "eth", name: "Ethereum", price_eur: 1513.2, market_cap_rank: 2, market_cap: 182644941920, volume_24h: 10628516019, change_24h: 4.5, change_7d: 11.76, last_updated: "2026-07-03T12:36:47.897Z" },
+      { id: "usd-coin", symbol: "usdc", name: "USDC", price_eur: 0.873472, market_cap_rank: 5, market_cap: 63886900057, volume_24h: 9968779977, change_24h: 0.03, change_7d: -0.35, last_updated: "2026-07-03T12:36:38.132Z" },
+      { id: "solana", symbol: "sol", name: "Solana", price_eur: 70.97, market_cap_rank: 7, market_cap: 41234052951, volume_24h: 2310215012, change_24h: -0.38, change_7d: 18.16, last_updated: "2026-07-03T12:36:34.150Z" },
+      { id: "re", symbol: "re", name: "RE", price_eur: 0.561876, market_cap_rank: 263, market_cap: 89672614, volume_24h: 1539650542, change_24h: 1.46, change_7d: 14.05, last_updated: "2026-07-03T12:36:44.545Z" },
+      { id: "ripple", symbol: "xrp", name: "XRP", price_eur: 0.964179, market_cap_rank: 6, market_cap: 60012215202, volume_24h: 1369644428, change_24h: 1.08, change_7d: 7.69, last_updated: "2026-07-03T12:36:34.473Z" },
+      { id: "binancecoin", symbol: "bnb", name: "BNB", price_eur: 492.96, market_cap_rank: 4, market_cap: 66453678757, volume_24h: 579890787, change_24h: 0.69, change_7d: 0.57, last_updated: "2026-07-03T12:36:47.360Z" },
+      { id: "dogecoin", symbol: "doge", name: "Dogecoin", price_eur: 0.066145, market_cap_rank: 11, market_cap: 10247092505, volume_24h: 551891141, change_24h: 1.61, change_7d: 2.71, last_updated: "2026-07-03T12:36:34.795Z" },
+      { id: "cardano", symbol: "ada", name: "Cardano", price_eur: 0.147027, market_cap_rank: 18, market_cap: 5477882749, volume_24h: 461838725, change_24h: 4.8, change_7d: 16.86, last_updated: "2026-07-03T12:36:44.060Z" },
+      { id: "nesa", symbol: "nes", name: "Nesa", price_eur: 0.206728, market_cap_rank: 590, market_cap: 29226063, volume_24h: 451686398, change_24h: 19.28, change_7d: 22.15, last_updated: "2026-07-03T12:36:44.780Z" },
+      { id: "hyperliquid", symbol: "hype", name: "Hyperliquid", price_eur: 60.2, market_cap_rank: 10, market_cap: 13391987506, volume_24h: 442529518, change_24h: 5.66, change_7d: 10.54, last_updated: "2026-07-03T12:36:34.805Z" },
+      { id: "quq", symbol: "quq", name: "Quq", price_eur: 0.00259694, market_cap_rank: 1918, market_cap: 2596946, volume_24h: 411703846, change_24h: -4.95, change_7d: -8.75, last_updated: "2026-07-03T12:36:24.607Z" },
+      { id: "tron", symbol: "trx", name: "TRON", price_eur: 0.279482, market_cap_rank: 8, market_cap: 26509436561, volume_24h: 359437506, change_24h: 1.06, change_7d: -0.94, last_updated: "2026-07-03T12:36:45.409Z" },
+      { id: "zcash", symbol: "zec", name: "Zcash", price_eur: 397.95, market_cap_rank: 15, market_cap: 6681978721, volume_24h: 300501378, change_24h: 1.97, change_7d: 14.42, last_updated: "2026-07-03T12:36:34.756Z" },
+      { id: "uniswap", symbol: "uni", name: "Uniswap", price_eur: 2.82, market_cap_rank: 43, market_cap: 1749472101, volume_24h: 269641229, change_24h: 3.34, change_7d: 12.15, last_updated: "2026-07-03T12:36:46.056Z" },
+      { id: "worldcoin-wld", symbol: "wld", name: "Worldcoin", price_eur: 0.36583, market_cap_rank: 51, market_cap: 1283966600, volume_24h: 254219087, change_24h: 9.87, change_7d: -10.02, last_updated: "2026-07-03T12:36:30.309Z" },
+      { id: "sui", symbol: "sui", name: "Sui", price_eur: 0.655115, market_cap_rank: 30, market_cap: 2654745952, volume_24h: 249085883, change_24h: 1.26, change_7d: 10.67, last_updated: "2026-07-03T12:36:28.832Z" },
+      { id: "chainlink", symbol: "link", name: "Chainlink", price_eur: 6.84, market_cap_rank: 20, market_cap: 5118864065, volume_24h: 219254510, change_24h: 2.05, change_7d: 9.34, last_updated: "2026-07-03T12:36:42.826Z" },
+      { id: "near", symbol: "near", name: "NEAR Protocol", price_eur: 1.77, market_cap_rank: 35, market_cap: 2306016725, volume_24h: 175614375, change_24h: 4.8, change_7d: 12.68, last_updated: "2026-07-03T12:36:44.974Z" },
+      { id: "avalanche-2", symbol: "avax", name: "Avalanche", price_eur: 5.99, market_cap_rank: 32, market_cap: 2587184091, volume_24h: 167306502, change_24h: 1.17, change_7d: 11.71, last_updated: "2026-07-03T12:36:46.037Z" }
+    ];
+
+    const repoAudit = [
+      { name: "freqtrade/freqtrade", role: "Bot crypto, backtest, dry-run", stars: 52019, risk: "faible", url: "https://github.com/freqtrade/freqtrade" },
+      { name: "ccxt/ccxt", role: "API exchanges et market data", stars: 43165, risk: "faible", url: "https://github.com/ccxt/ccxt" },
+      { name: "hummingbot/hummingbot", role: "Market making, arbitrage", stars: 19059, risk: "moyen", url: "https://github.com/hummingbot/hummingbot" },
+      { name: "polakowo/vectorbt", role: "Backtests rapides", stars: 8128, risk: "faible", url: "https://github.com/polakowo/vectorbt" },
+      { name: "kernc/backtesting.py", role: "Backtests simples", stars: 8624, risk: "faible", url: "https://github.com/kernc/backtesting.py" },
+      { name: "TA-Lib/ta-lib-python", role: "Indicateurs techniques", stars: 12090, risk: "faible", url: "https://github.com/TA-Lib/ta-lib-python" },
+      { name: "jesse-ai/jesse", role: "Framework trading crypto", stars: 8133, risk: "moyen", url: "https://github.com/jesse-ai/jesse" },
+      { name: "python-telegram-bot/python-telegram-bot", role: "Alertes Telegram", stars: 29280, risk: "faible", url: "https://github.com/python-telegram-bot/python-telegram-bot" }
+    ];
+
+    const state = {
+      assets: fallbackAssets,
+      positions: JSON.parse(localStorage.getItem("fable_positions") || "[]"),
+      settings: JSON.parse(localStorage.getItem("fable_settings") || "{}")
+    };
+
+    const el = (id) => document.getElementById(id);
+
+    function eur(value) {
+      if (!Number.isFinite(value)) return "-";
+      return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: value > 100 ? 0 : 4 }).format(value);
+    }
+
+    function compact(value) {
+      if (!Number.isFinite(value)) return "-";
+      return new Intl.NumberFormat("fr-FR", { notation: "compact", maximumFractionDigits: 2 }).format(value);
+    }
+
+    function pct(value) {
+      if (!Number.isFinite(value)) return "-";
+      return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+    }
+
+    function ageHours(asset) {
+      const t = new Date(asset.last_updated || 0).getTime();
+      if (!t) return 9999;
+      return (Date.now() - t) / 36e5;
+    }
+
+    function flags(asset) {
+      const out = [];
+      const volumeToMcap = asset.market_cap ? asset.volume_24h / asset.market_cap : 99;
+      const stable = ["usdt", "usdc", "dai", "usds", "usd1", "rlusd"].includes(String(asset.symbol).toLowerCase());
+      if (!asset.price_eur || asset.price_eur <= 0) out.push("prix");
+      if (ageHours(asset) > 12) out.push("stale");
+      if ((asset.market_cap_rank || 9999) > 200) out.push("rank");
+      if (volumeToMcap > 3 && !stable) out.push("vol/mcap");
+      if (Math.abs(asset.change_7d || 0) > 50) out.push("spike");
+      if (stable) out.push("stable");
+      return out;
+    }
+
+    function score(asset) {
+      const f = flags(asset);
+      if (f.includes("prix") || f.includes("stale") || f.includes("vol/mcap")) return 5;
+      let s = 30;
+      if ((asset.market_cap_rank || 999) <= 10) s += 25;
+      else if ((asset.market_cap_rank || 999) <= 50) s += 15;
+      if ((asset.volume_24h || 0) > 1_000_000_000) s += 20;
+      else if ((asset.volume_24h || 0) > 200_000_000) s += 12;
+      if ((asset.change_24h || 0) > 0) s += 8;
+      if ((asset.change_7d || 0) > 4 && (asset.change_7d || 0) < 25) s += 12;
+      if (f.includes("stable")) s -= 20;
+      if (f.includes("rank")) s -= 20;
+      if ((asset.change_24h || 0) < -6) s -= 10;
+      return Math.max(0, Math.min(100, Math.round(s)));
+    }
+
+    function currentSettings() {
+      return {
+        capital: Number(el("capitalInput").value || 0),
+        target: Number(el("targetInput").value || 220),
+        riskPct: Number(el("riskInput").value || 0),
+        dailyLossPct: Number(el("dailyLossInput").value || 0)
+      };
+    }
+
+    function saveSettings() {
+      localStorage.setItem("fable_settings", JSON.stringify(currentSettings()));
+      renderRisk();
+    }
+
+    function applySettings() {
+      const defaults = { capital: 1000, target: 220, riskPct: 0.5, dailyLossPct: 2 };
+      const s = { ...defaults, ...state.settings };
+      el("capitalInput").value = s.capital;
+      el("targetInput").value = s.target;
+      el("riskInput").value = s.riskPct;
+      el("dailyLossInput").value = s.dailyLossPct;
+    }
+
+    function totalOpenPnl() {
+      return state.positions.reduce((sum, p) => {
+        const asset = state.assets.find((a) => a.id === p.id);
+        if (!asset) return sum;
+        return sum + (Number(asset.price_eur) - Number(p.entry)) * Number(p.qty);
+      }, 0);
+    }
+
+    function renderRisk() {
+      const s = currentSettings();
+      const pnl = totalOpenPnl();
+      el("targetLabel").textContent = eur(s.target);
+      el("openPnlLabel").textContent = eur(pnl);
+      el("openPnlLabel").className = pnl >= 0 ? "up" : "down";
+      el("riskTradeLabel").textContent = eur(s.capital * s.riskPct / 100);
+      el("dailyStopLabel").textContent = eur(s.capital * s.dailyLossPct / 100);
+      el("targetBar").style.width = `${Math.max(0, Math.min(100, s.target ? (pnl / s.target) * 100 : 0))}%`;
+      el("loopText").innerHTML = `Capital suivi: <strong>${eur(s.capital)}</strong>. Risque max par idee: <strong>${eur(s.capital * s.riskPct / 100)}</strong>. Stop quotidien: <strong>${eur(s.capital * s.dailyLossPct / 100)}</strong>. Objectif cycle: <strong>${eur(s.target)}</strong>.`;
+    }
+
+    function renderMarket() {
+      const filter = el("marketFilter").value;
+      let rows = state.assets.slice().map((asset) => ({ asset, score: score(asset), flags: flags(asset) }));
+      rows.sort((a, b) => b.score - a.score);
+      if (filter === "safe") rows = rows.filter((r) => r.score >= 55 && !r.flags.includes("stable"));
+      if (filter === "momentum") rows = rows.filter((r) => r.score >= 55 && r.asset.change_7d > 8 && !r.flags.includes("stable"));
+      if (filter === "flagged") rows = rows.filter((r) => r.flags.some((x) => ["stale", "rank", "vol/mcap", "spike", "prix"].includes(x)));
+
+      el("marketRows").innerHTML = rows.map(({ asset, score: s, flags: f }) => {
+        const scoreClass = s < 20 ? "bad" : s < 55 ? "low" : "";
+        const stateLabel = f.length ? f.join(", ") : "ok";
+        return `
+          <tr>
+            <td><strong>${asset.symbol.toUpperCase()}</strong><br><span class="muted">${asset.name}</span></td>
+            <td class="num">${eur(Number(asset.price_eur))}</td>
+            <td class="num ${asset.change_24h >= 0 ? "up" : "down"}">${pct(Number(asset.change_24h))}</td>
+            <td class="num ${asset.change_7d >= 0 ? "up" : "down"}">${pct(Number(asset.change_7d))}</td>
+            <td class="num">${compact(Number(asset.volume_24h))}</td>
+            <td class="num"><span class="score ${scoreClass}">${s}</span></td>
+            <td>${stateLabel}</td>
+          </tr>
+        `;
+      }).join("");
+      renderAssetOptions();
+    }
+
+    function renderAssetOptions() {
+      const selected = el("positionAsset").value;
+      const assets = state.assets
+        .filter((a) => score(a) >= 20)
+        .sort((a, b) => a.market_cap_rank - b.market_cap_rank);
+      el("positionAsset").innerHTML = assets.map((a) => `<option value="${a.id}">${a.symbol.toUpperCase()} - ${a.name}</option>`).join("");
+      if (selected) el("positionAsset").value = selected;
+    }
+
+    function renderPositions() {
+      if (!state.positions.length) {
+        el("positionRows").innerHTML = `<tr><td colspan="6" class="muted">Aucune position simulee.</td></tr>`;
+      } else {
+        el("positionRows").innerHTML = state.positions.map((p, index) => {
+          const asset = state.assets.find((a) => a.id === p.id);
+          const price = asset ? Number(asset.price_eur) : 0;
+          const pnl = (price - Number(p.entry)) * Number(p.qty);
+          return `
+            <tr>
+              <td><strong>${p.symbol.toUpperCase()}</strong><br><span class="muted">${p.note || ""}</span></td>
+              <td class="num">${Number(p.qty).toLocaleString("fr-FR", { maximumFractionDigits: 8 })}</td>
+              <td class="num">${eur(Number(p.entry))}</td>
+              <td class="num">${eur(price)}</td>
+              <td class="num ${pnl >= 0 ? "up" : "down"}">${eur(pnl)}</td>
+              <td class="num"><button data-remove="${index}">X</button></td>
+            </tr>
+          `;
+        }).join("");
+      }
+      localStorage.setItem("fable_positions", JSON.stringify(state.positions));
+      renderRisk();
+    }
+
+    function renderRepos() {
+      el("repoList").innerHTML = repoAudit.map((repo) => `
+        <a class="repo" href="${repo.url}" target="_blank" rel="noreferrer">
+          <span>
+            <strong>${repo.name}</strong>
+            <small>${repo.role} - ${repo.stars.toLocaleString("fr-FR")} stars</small>
+          </span>
+          <span class="pill ${repo.risk === "faible" ? "good" : "warn"}">${repo.risk}</span>
+        </a>
+      `).join("");
+    }
+
+    async function refreshMarket() {
+      el("apiStatus").textContent = "API CoinGecko...";
+      el("apiStatus").className = "pill warn";
+      try {
+        const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=volume_desc&per_page=80&page=1&sparkline=false&price_change_percentage=24h,7d";
+        const res = await fetch(url, { headers: { accept: "application/json" } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        state.assets = data.map((a) => ({
+          id: a.id,
+          symbol: a.symbol,
+          name: a.name,
+          price_eur: Number(a.current_price),
+          market_cap_rank: Number(a.market_cap_rank || 9999),
+          market_cap: Number(a.market_cap || 0),
+          volume_24h: Number(a.total_volume || 0),
+          change_24h: Number(a.price_change_percentage_24h_in_currency ?? a.price_change_percentage_24h ?? 0),
+          change_7d: Number(a.price_change_percentage_7d_in_currency ?? 0),
+          last_updated: a.last_updated
+        }));
+        el("apiStatus").textContent = `Live ${new Date().toLocaleTimeString("fr-FR")}`;
+        el("apiStatus").className = "pill good";
+      } catch (err) {
+        state.assets = fallbackAssets;
+        el("apiStatus").textContent = "Snapshot local";
+        el("apiStatus").className = "pill warn";
+      }
+      renderMarket();
+      renderPositions();
+    }
+
+    function addPosition() {
+      const id = el("positionAsset").value;
+      const asset = state.assets.find((a) => a.id === id);
+      if (!asset) return;
+      const qty = Number(el("positionQty").value || 0);
+      const entry = Number(el("positionEntry").value || 0);
+      if (qty <= 0 || entry <= 0) return;
+      state.positions.push({
+        id,
+        symbol: asset.symbol,
+        qty,
+        entry,
+        note: el("positionNote").value.trim()
+      });
+      el("positionQty").value = "0";
+      el("positionEntry").value = "0";
+      el("positionNote").value = "";
+      renderPositions();
+    }
+
+    function copyPrompt() {
+      const text = `Run one Fable 5 crypto research loop. Goal: find risk-controlled paths toward +220 EUR cycles. Mode: research and paper trading only. Fetch market data, filter scams/stale assets, backtest before any setup, output NO TRADE if weak, update ./fable_trading_memory/state.md and one decision note. Never request seeds/private keys/withdrawal permissions.`;
+      navigator.clipboard?.writeText(text);
+      el("copyPrompt").textContent = "Copie";
+      setTimeout(() => { el("copyPrompt").textContent = "Copier prompt"; }, 1200);
+    }
+
+    function bind() {
+      ["capitalInput", "targetInput", "riskInput", "dailyLossInput"].forEach((id) => el(id).addEventListener("input", saveSettings));
+      el("refreshBtn").addEventListener("click", refreshMarket);
+      el("marketFilter").addEventListener("change", renderMarket);
+      el("addPosition").addEventListener("click", addPosition);
+      el("clearPositions").addEventListener("click", () => { state.positions = []; renderPositions(); });
+      el("resetSettings").addEventListener("click", () => {
+        localStorage.removeItem("fable_settings");
+        state.settings = {};
+        applySettings();
+        renderRisk();
+      });
+      el("copyPrompt").addEventListener("click", copyPrompt);
+      el("positionRows").addEventListener("click", (event) => {
+        const index = event.target?.dataset?.remove;
+        if (index === undefined) return;
+        state.positions.splice(Number(index), 1);
+        renderPositions();
+      });
+      document.querySelectorAll(".tab").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", "false"));
+          button.setAttribute("aria-selected", "true");
+          ["plan", "repos", "guards"].forEach((id) => el(`tab-${id}`).classList.toggle("hidden", id !== button.dataset.tab));
+        });
+      });
+    }
+
+    applySettings();
+    bind();
+    renderRepos();
+    refreshMarket();
+  </script>
+</body>
+</html>
